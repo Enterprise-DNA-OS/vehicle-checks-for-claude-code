@@ -1,0 +1,37 @@
+{
+  "assets": {
+    "file": "assets.csv",
+    "columns": {
+      "Whip Around ID": "source_id",
+      "Asset name": "name",
+      "License plate": "plate",
+      "Mileage": "odometer",
+      "Country": "country",
+      "Timezone": "timezone",
+      "Depot": "depot"
+    }
+  },
+  "inspections": {
+    "file": "inspections.csv",
+    "columns": {
+      "ID": "source_id",
+      "Asset ID": "asset_id",
+      "Name": "name",
+      "Date": "inspected_at",
+      "Reading": "odometer",
+      "Result": "result",
+      "Signer": "signed_by"
+    }
+  },
+  "defects": {
+    "file": "defects.csv",
+    "columns": {
+      "ID": "source_id",
+      "Asset ID": "asset_id",
+      "Name": "name",
+      "Component": "component",
+      "Severity": "severity",
+      "Owner": "owner"
+    }
+  }
+}

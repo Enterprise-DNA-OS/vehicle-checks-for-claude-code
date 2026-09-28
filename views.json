@@ -1,13 +1,41 @@
 [
   {
-    "name": "week",
-    "title": "This week",
-    "subtitle": "Vehicle Checks for Claude Code: what needs attention, rendered by npm run view",
+    "name": "fleet-week",
+    "title": "Fleet checks and holds",
+    "subtitle": "Recorded evidence for an operator review, not permission to drive.",
     "sections": [
       {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "title": "Daily checks",
+        "sql": "select * from prestart_queue order by asset"
+      },
+      {
+        "title": "Review findings",
+        "sql": "select * from compliance_findings order by asset,rule"
+      }
+    ]
+  },
+  {
+    "name": "workshop",
+    "title": "Workshop queue",
+    "sections": [
+      {
+        "title": "Open defects",
+        "sql": "select asset,defect,severity,owner,age_days,due_date from defect_queue where status='open' order by age_days desc"
+      },
+      {
+        "title": "Services",
+        "sql": "select * from service_queue order by due_date nulls first"
+      }
+    ]
+  },
+  {
+    "name": "costs",
+    "title": "Recorded repair costs",
+    "sections": [
+      {
+        "title": "By asset and currency",
+        "note": "Entered repair costs only. No fuel, lost revenue or unentered labour.",
+        "sql": "select a.name asset,r.currency,sum(r.cost_cents) cost_cents from repairs r join defects d on d.id=r.defect_id join assets a on a.id=d.asset_id group by a.name,r.currency order by a.name,r.currency"
       }
     ]
   }

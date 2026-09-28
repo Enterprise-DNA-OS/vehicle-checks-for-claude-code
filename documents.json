@@ -1,11 +1,52 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
+    "name": "vehicle-handover",
+    "title": "Vehicle handover for review",
+    "for_each": "select id,name from assets where status<>'retired'",
     "file": "name",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Asset and certificates",
+        "sql": "select name,plate,status,odometer,certificate_type,certificate_due,registration_due from assets where id=$1"
+      },
+      {
+        "title": "Open defects",
+        "note": "A person decides whether the vehicle can be used. This document does not certify roadworthiness.",
+        "sql": "select defect,severity,owner,reported_at,due_date from defect_queue where asset_id=$1 and status='open'"
+      },
+      {
+        "title": "Service work",
+        "sql": "select service,due_date,due_odometer,due_now from service_queue where asset_id=$1"
+      }
+    ]
+  },
+  {
+    "name": "inspection-record",
+    "title": "Inspection evidence record",
+    "for_each": "select id,name from inspections",
+    "file": "name",
+    "sections": [
+      {
+        "title": "Recorded inspection",
+        "sql": "select a.name asset,d.name driver,i.inspected_at,i.odometer,i.result,i.signed_by,i.verified_complete from inspections i join assets a on a.id=i.asset_id left join drivers d on d.id=i.driver_id where i.id=$1"
+      },
+      {
+        "title": "Checklist answers at capture",
+        "note": "An empty list means item evidence was not imported or recorded.",
+        "sql": "select x->>'item' item,x->>'result' result,x->>'note' note from inspections i cross join lateral jsonb_array_elements(i.answers) x where i.id=$1"
+      }
+    ]
+  },
+  {
+    "name": "repair-record",
+    "title": "Defect repair record",
+    "for_each": "select id,name from repairs",
+    "file": "name",
+    "sections": [
+      {
+        "title": "Repair evidence",
+        "sql": "select a.name asset,d.name defect,d.component,r.technician,r.repaired_at,r.evidence,r.currency,r.cost_cents from repairs r join defects d on d.id=r.defect_id join assets a on a.id=d.asset_id where r.id=$1"
+      }
     ]
   }
 ]
